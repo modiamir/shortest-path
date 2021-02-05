@@ -5,10 +5,9 @@ type Vertex struct {
 	Name    string `json:"name"`
 	City    string `json:"city"`
 	Country string `json:"country"`
-	Point   Point `json:"_geoloc"`
-	Edges   []Edge
+	Point   Point  `json:"_geoloc"`
+	Edges   []Edge `json:"-"`
 }
-
 
 type VertexList struct {
 	Vertices []Vertex
