@@ -1,13 +1,18 @@
 package models
 
 type VertexDistance struct {
-	Distance   float64
-	VertexCode string
-	Index      int
+	Distance    float64
+	FlightCount int
+	VertexCode  string
+	Index       int
 }
 
 func (vd *VertexDistance) SetDistance(distance float64) {
 	vd.Distance = distance
+}
+
+func (vd *VertexDistance) SetFlightCount(flightCount int) {
+	vd.FlightCount = flightCount
 }
 
 func (vd *VertexDistance) SetIndex(index int) {

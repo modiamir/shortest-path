@@ -2,12 +2,26 @@ package service
 
 import (
 	"container/heap"
-	"fmt"
 	"math"
 	"shortest-path/models"
 )
 
-func FindShortestPath(verticesMap map[string]*models.Vertex, from models.Vertex, to models.Vertex) []models.Vertex {
+func FindShortestPathWithMaxEdge(
+	verticesMap map[string]*models.Vertex,
+	from models.Vertex,
+	to models.Vertex,
+	maxEdge int) []models.Vertex {
+	return dijkstra(verticesMap, from, to, maxEdge)
+}
+
+func FindShortestPath(
+	verticesMap map[string]*models.Vertex,
+	from models.Vertex,
+	to models.Vertex) []models.Vertex {
+	return dijkstra(verticesMap, from, to, 0)
+}
+
+func dijkstra(verticesMap map[string]*models.Vertex, from models.Vertex, to models.Vertex, maxEdge int) []models.Vertex {
 	distances := models.Distances{}
 	heap.Init(&distances)
 
@@ -24,32 +38,33 @@ func FindShortestPath(verticesMap map[string]*models.Vertex, from models.Vertex,
 	}
 
 	for len(distances) > 0 {
-		current := heap.Pop(&distances).(*models.VertexDistance) // u
+		current := heap.Pop(&distances).(*models.VertexDistance)
 
 		if current.VertexCode == to.Code {
 			break
 		}
 
 		for i := 0; i < len(verticesMap[current.VertexCode].Edges); i++ {
-			edge := verticesMap[current.VertexCode].Edges[i] // v's edge
+			edge := verticesMap[current.VertexCode].Edges[i]
 			newDistance := edge.Distance + dist[current.VertexCode].Distance
-			if newDistance < dist[edge.To.Code].Distance {
+			if newDistance < dist[edge.To.Code].Distance && (maxEdge <= 0 || (dist[current.VertexCode].FlightCount+1) < maxEdge) {
+				if maxEdge > 0 {
+					dist[edge.To.Code].SetFlightCount(dist[current.VertexCode].FlightCount + 1)
+				}
 				dist[edge.To.Code].SetDistance(newDistance)
 				prev[edge.To.Code] = current
 				heap.Fix(&distances, dist[edge.To.Code].Index)
 			}
 		}
-		vc := current.VertexCode
-		fmt.Println(vc)
 	}
 
 	path := make([]models.Vertex, 0)
 	reverseCode := to.Code
 	val, ok := prev[reverseCode]
-	if ok {
+	if ok && val != nil {
 		path = prependVertex(path, *verticesMap[to.Code])
 	}
-	for ok {
+	for ok && val != nil {
 		path = prependVertex(path, *verticesMap[val.VertexCode])
 		val, ok = prev[val.VertexCode]
 	}
