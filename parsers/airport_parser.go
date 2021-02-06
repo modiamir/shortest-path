@@ -2,10 +2,10 @@ package parsers
 
 import (
 	"encoding/json"
+	"github.com/modiamir/shortest-path/models"
+	"github.com/modiamir/shortest-path/utils"
 	"io/ioutil"
 	"log"
-	"shortest-path/models"
-	"shortest-path/utils"
 )
 
 func ParseAirports() map[string]*models.Vertex {

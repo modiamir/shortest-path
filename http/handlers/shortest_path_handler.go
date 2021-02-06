@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	apphttp "github.com/modiamir/shortest-path/http"
+	"github.com/modiamir/shortest-path/service"
+	"github.com/modiamir/shortest-path/storage"
 	"net/http"
-	apphttp "shortest-path/http"
-	"shortest-path/service"
-	"shortest-path/storage"
 )
 
 type Form struct {

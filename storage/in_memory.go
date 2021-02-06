@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"shortest-path/models"
-	"shortest-path/parsers"
+	"github.com/modiamir/shortest-path/models"
+	"github.com/modiamir/shortest-path/parsers"
 )
 
 type InMemoryVertexStorage struct {

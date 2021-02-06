@@ -2,8 +2,8 @@ package service
 
 import (
 	"container/heap"
+	"github.com/modiamir/shortest-path/models"
 	"math"
-	"shortest-path/models"
 )
 
 func FindShortestPathWithMaxEdge(

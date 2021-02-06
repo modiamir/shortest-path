@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/modiamir/shortest-path/http/handlers"
+	"github.com/modiamir/shortest-path/storage"
 	"log"
 	"net/http"
-	"shortest-path/http/handlers"
-	"shortest-path/storage"
 )
 
 func main() {

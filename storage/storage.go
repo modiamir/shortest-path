@@ -1,6 +1,6 @@
 package storage
 
-import "shortest-path/models"
+import "github.com/modiamir/shortest-path/models"
 
 type VertexStorageInterface interface {
 	GetVertices() map[string]*models.Vertex
