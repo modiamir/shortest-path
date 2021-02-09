@@ -10,6 +10,6 @@ import (
 func main() {
 	storage.SetDefaultStorage(storage.NewInMemoryStorage())
 
-	http.Handle("/foo", handlers.ShortestPathHandler{})
+	http.Handle("/v1/shortest-path", handlers.ShortestPathHandler{})
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

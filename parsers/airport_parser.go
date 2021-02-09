@@ -38,10 +38,14 @@ func ParseAirportRoutes(verticesMap *map[string]*models.Vertex) {
 
 	err = json.Unmarshal(jsonFile, &routes)
 
+	visitedRoutes := make(map[string]bool)
+
 	for i := 0; i < len(routes); i++ {
 		sourceCode := routes[i]["s"]
 		destinationCode := routes[i]["d"]
-		if (*verticesMap)[sourceCode] != nil && (*verticesMap)[destinationCode] != nil {
+		visitedRoute := sourceCode + destinationCode
+		if !visitedRoutes[visitedRoute] && (*verticesMap)[sourceCode] != nil && (*verticesMap)[destinationCode] != nil {
+			visitedRoutes[visitedRoute] = true
 			sourcePoint := (*verticesMap)[sourceCode].Point
 			destinationPoint := (*verticesMap)[destinationCode].Point
 

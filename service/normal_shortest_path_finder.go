@@ -6,51 +6,46 @@ import (
 	"math"
 )
 
-func FindShortestPathWithMaxEdge(
-	verticesMap map[string]*models.Vertex,
-	from models.Vertex,
-	to models.Vertex,
-	maxEdge int) []models.Vertex {
-	return dijkstra(verticesMap, from, to, maxEdge)
+type NormalShortestPathFinder struct {
+	verticesMap map[string]*models.Vertex
 }
 
-func FindShortestPath(
-	verticesMap map[string]*models.Vertex,
-	from models.Vertex,
-	to models.Vertex) []models.Vertex {
-	return dijkstra(verticesMap, from, to, 0)
-}
-
-func dijkstra(verticesMap map[string]*models.Vertex, from models.Vertex, to models.Vertex, maxEdge int) []models.Vertex {
+func (f NormalShortestPathFinder) Find(from string, to string) ([]models.Vertex, float64) {
 	distances := models.Distances{}
 	heap.Init(&distances)
 
 	prev := make(map[string]*models.VertexDistance)
 	dist := make(map[string]*models.VertexDistance)
-	for vertexCode := range verticesMap {
+	visited := make(map[string]bool)
+	for vertexCode := range f.verticesMap {
 		vertexDistance := models.VertexDistance{VertexCode: vertexCode, Distance: 0}
-		if from.Code != vertexCode {
+		if from != vertexCode {
 			vertexDistance.SetDistance(math.Inf(1))
 			prev[vertexCode] = nil
 		}
 		dist[vertexCode] = &vertexDistance
+		visited[vertexCode] = false
 		heap.Push(&distances, &vertexDistance)
 	}
 
 	for len(distances) > 0 {
 		current := heap.Pop(&distances).(*models.VertexDistance)
+		visited[current.VertexCode] = true
 
-		if current.VertexCode == to.Code {
+		if current.VertexCode == to {
 			break
 		}
 
-		for i := 0; i < len(verticesMap[current.VertexCode].Edges); i++ {
-			edge := verticesMap[current.VertexCode].Edges[i]
+		for i := 0; i < len(f.verticesMap[current.VertexCode].Edges); i++ {
+			edge := f.verticesMap[current.VertexCode].Edges[i]
+
+			if visited[edge.To.Code] {
+				continue
+			}
+
 			newDistance := edge.Distance + dist[current.VertexCode].Distance
-			if newDistance < dist[edge.To.Code].Distance && (maxEdge <= 0 || (dist[current.VertexCode].FlightCount+1) < maxEdge) {
-				if maxEdge > 0 {
-					dist[edge.To.Code].SetFlightCount(dist[current.VertexCode].FlightCount + 1)
-				}
+
+			if newDistance < dist[edge.To.Code].Distance {
 				dist[edge.To.Code].SetDistance(newDistance)
 				prev[edge.To.Code] = current
 				heap.Fix(&distances, dist[edge.To.Code].Index)
@@ -59,17 +54,17 @@ func dijkstra(verticesMap map[string]*models.Vertex, from models.Vertex, to mode
 	}
 
 	path := make([]models.Vertex, 0)
-	reverseCode := to.Code
+	reverseCode := to
 	val, ok := prev[reverseCode]
 	if ok && val != nil {
-		path = prependVertex(path, *verticesMap[to.Code])
+		path = prependVertex(path, *f.verticesMap[to])
 	}
 	for ok && val != nil {
-		path = prependVertex(path, *verticesMap[val.VertexCode])
+		path = prependVertex(path, *f.verticesMap[val.VertexCode])
 		val, ok = prev[val.VertexCode]
 	}
 
-	return path
+	return path, dist[to].Distance
 }
 
 func prependVertex(x []models.Vertex, y models.Vertex) []models.Vertex {
@@ -77,4 +72,8 @@ func prependVertex(x []models.Vertex, y models.Vertex) []models.Vertex {
 	copy(x[1:], x)
 	x[0] = y
 	return x
+}
+
+func NewNormalShortestPathFinder(verticesMap map[string]*models.Vertex) ShortestPathFinderInterface {
+	return NormalShortestPathFinder{verticesMap: verticesMap}
 }

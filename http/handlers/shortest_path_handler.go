@@ -49,8 +49,10 @@ func (h ShortestPathHandler) ServeHTTP(writer http.ResponseWriter, request *http
 	}
 
 	vertices := storage.GetDefaultStorage().GetVertices()
-	path := service.FindShortestPathWithMaxEdge(vertices, *vertices[form.From], *vertices[form.To], 4)
+	shortestPathFinder := service.NewShortestPathWithMaxEdgeFinder(vertices, 4)
+	path, _ := shortestPathFinder.Find(form.From, form.To)
 
+	writer.Header().Add("Content-Type", "application/json")
 	jsonBody, err := json.Marshal(path)
 	fmt.Fprintf(writer, string(jsonBody))
 
